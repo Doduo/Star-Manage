@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GitHub Stars Manager</title>
+    <style>
+      .search-box {
+        margin: 20px;
+        padding: 10px;
+        width: 300px;
+      }
+      .tag-filter {
+        margin: 10px;
+      }
+      #starList {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+      }
+      .star-item {
+        flex: 0 0 23%;
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+      }
+      .tag {
+        background-color: #e1ecf4;
+        padding: 2px 8px;
+        border-radius: 3px;
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>GitHub Stars Manager ({{ stars|length }}个项目)</h1>
+
+    <input
+      type="text"
+      class="search-box"
+      placeholder="搜索项目..."
+      id="searchInput"
+    />
+
+    <div id="tagFilters"></div>
+    <div id="starList">
+      {% for star in stars %}
+      <div
+        class="star-item"
+        data-tags="{{ star.tags|lower }}"
+        data-language="{{ star.language|lower }}"
+      >
+        <h3>
+          <a href="{{ star.html_url }}" target="_blank">{{ star.full_name }}</a>
+        </h3>
+        <p>{{ star.description }}</p>
+        <div class="meta">
+          {% if star.language %}<span class="tag language"
+            >{{ star.language }}</span
+          >{% endif %} {% if star.tags %} {% for tag in star.tags.split(',') %}
+          <span class="tag">{{ tag.strip() }}</span>
+          {% endfor %} {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      // 搜索功能
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function (e) {
+          const searchTerm = e.target.value.toLowerCase();
+          filterItems();
+        });
+
+      // 过滤函数
+      function filterItems() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const items = document.getElementsByClassName("star-item");
+
+        Array.from(items).forEach((item) => {
+          const text = item.textContent.toLowerCase();
+          const matchSearch = text.includes(searchTerm);
+          item.style.display = matchSearch ? "block" : "none";
+        });
+      }
+    </script>
+  </body>
+</html>
